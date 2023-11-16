@@ -6,7 +6,6 @@ from face_embedder import FaceEmbedder
 import cv2
 import math
 
-
 class App:
     def __init__(self) -> None:
         self.database = Database(
