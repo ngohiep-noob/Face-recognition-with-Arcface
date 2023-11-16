@@ -20,11 +20,9 @@ class FaceEmbedder:
         self.feature_extractor = to_cuda(self.feature_extractor)
         self.feature_extractor.eval()
 
-    def embed_face(self, face):
-        img = to_cuda(preprocess(face["face"]))
+    def embed_face(self, face_img):
+        img = to_cuda(preprocess(face_img))
 
         img = img.reshape(1, *img.shape)
 
-        face["embedding"] = self.feature_extractor(img)
-
-        return face
+        return self.feature_extractor(img).detach().cpu().numpy()[0]
