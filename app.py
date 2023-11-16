@@ -6,6 +6,7 @@ from face_embedder import FaceEmbedder
 import cv2
 import math
 
+
 class App:
     def __init__(self) -> None:
         self.database = Database(
@@ -70,6 +71,9 @@ class App:
                 max_pid = pid
 
         return max_pid, max_score
+
+    def get_person_info(self, person_id):
+        return self.person_col.find_by_id(person_id)
 
     def recognize(self, image):
         embedding, face = self.get_embedding(image)
