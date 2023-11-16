@@ -5,6 +5,7 @@ from face_detector import FaceDetector
 from face_embedder import FaceEmbedder
 import cv2
 import math
+from pprint import pprint
 
 
 class App:
@@ -80,8 +81,6 @@ class App:
 
         sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
 
-        print(sim_faces)
-
         max_pid, max_score = self.vote_prediction(sim_faces)
 
         return max_pid, max_score
@@ -112,4 +111,7 @@ if __name__ == "__main__":
 
     # pid, score = app.recognize(test_img)
 
-    # print(pid, score)
+    # person = app.get_person_info(pid)
+
+    # print("Person info:")
+    # pprint(person)
