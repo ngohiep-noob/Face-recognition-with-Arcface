@@ -36,6 +36,9 @@ class App:
 
         return person_id
 
+    def get_all_people(self):
+        return self.person_col.get_all()
+
     def get_faces_by_person_id(self, person_id):
         return self.facebank_col.get_faces_by_person_id(person_id)
 
