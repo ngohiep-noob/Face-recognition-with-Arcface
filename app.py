@@ -5,7 +5,6 @@ from face_detector import FaceDetector
 from face_embedder import FaceEmbedder
 import cv2
 
-
 class App:
     def __init__(self) -> None:
         self.database = Database(

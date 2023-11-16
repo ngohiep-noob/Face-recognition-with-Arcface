@@ -1,7 +1,8 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-
+from app import App
+import pymongo
 
 st.markdown("# Face Register")
 st.sidebar.markdown("# Face Register")
@@ -30,6 +31,11 @@ if submit_button:
           # Display the image with the selected user's name as the caption
           if user_type == "New User":
             st.write("New Face Register successfully")
+            App.add_new_person(name=new_user_name, image=img_array)
+            for face in faces:
+                cv2.imshow("face", face["image"])
+            cv2.waitKey(0)
+
             st.image(img_array, caption=new_user_name)
           elif user_type == "Registered User":
               st.image(img_array, caption=selected_user)
