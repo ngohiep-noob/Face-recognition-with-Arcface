@@ -7,8 +7,7 @@ class Facebank(Collection):
         super().__init__(name, database)
 
         self.embedding_path = embedding_path
-        self.num_candidates = 10
-        self.limit = 10
+        self.num_candidates = 100
 
     def add_face(self, image, embedding, person_id):
         encoded_image = encode_image(image)
@@ -32,7 +31,7 @@ class Facebank(Collection):
 
         return result
 
-    def get_similar_face(self, embedding):
+    def get_similar_face(self, embedding, limit=10):
         results = self.collection.aggregate(
             [
                 {
@@ -40,11 +39,18 @@ class Facebank(Collection):
                         "queryVector": embedding,
                         "path": self.embedding_path,
                         "numCandidates": self.num_candidates,
-                        "limit": self.limit,
+                        "limit": limit,
                         "index": "default",
-                    }
-                }
+                    },
+                },
+                {
+                    "$project": {
+                        "_id": 1,
+                        "person_id": 1,
+                        "score": {"$meta": "vectorSearchScore"},
+                    },
+                },
             ]
         )
 
-        return results
+        return list(results)

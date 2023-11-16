@@ -4,6 +4,7 @@ from database.person import Person
 from face_detector import FaceDetector
 from face_embedder import FaceEmbedder
 import cv2
+import math
 
 
 class App:
@@ -17,7 +18,7 @@ class App:
 
         self.person_col = Person(name="person", database=self.database)
         self.facebank_col = Facebank(
-            name="facebank", database=self.database, embedding_path="face_embedding"
+            name="facebank", database=self.database, embedding_path="embedding"
         )
 
         print("App initialized!")
@@ -47,26 +48,65 @@ class App:
 
         self.facebank_col.add_face(image=face, embedding=embedding, person_id=person_id)
 
-    def recognize_person(self, image):
-        pass
+    def vote_prediction(self, sim_faces):
+        pred = {}  # {person_id: accumulated weighted score}
+
+        for idx, face in enumerate(sim_faces):
+            pid = face["person_id"]
+            score = face["score"]
+
+            weighted_score = score / math.log(idx + 2)
+
+            if pid in pred:
+                pred[pid] += weighted_score
+            else:
+                pred[pid] = weighted_score
+
+        max_score = 0
+        max_pid = None
+
+        for pid, score in pred.items():
+            if score > max_score:
+                max_score = score
+                max_pid = pid
+
+        return max_pid, max_score
+
+    def recognize(self, image):
+        embedding, face = self.get_embedding(image)
+
+        sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
+
+        print(sim_faces)
+
+        max_pid, max_score = self.vote_prediction(sim_faces)
+
+        return max_pid, max_score
 
 
 if __name__ == "__main__":
     app = App()
 
-    # UNCOMMENT THIS TO ADD NEW PERSON
+    # -----UNCOMMENT THIS TO ADD NEW PERSON-----
     # img1 = cv2.imread("sample\hiep-dep-trai.jpg")
     # img2 = cv2.imread("sample\hiep-handsome.jpg")
 
     # pid = app.add_new_person("Ngo Hiep", img1)
     # app.add_new_face(person_id=pid, image=img2)
 
-    # UNCOMMENT THIS TO GET FACES BY PERSON ID
+    # -----UNCOMMENT THIS TO GET FACES BY PERSON ID-----
     # pid = "655624f0bbe1e9caaaab6434"
 
     # faces = app.get_faces_by_person_id(pid)
 
     # for face in faces:
-    #     cv2.imshow("face", face["image"])
+    #     cv2.imshow(str(face["_id"]), face["image"])
 
     # cv2.waitKey(0)
+
+    # -----UNCOMMENT THIS TO RECOGNIZE-----
+    # test_img = cv2.imread("sample\hiep-dep-trai.test.jpg")
+
+    # pid, score = app.recognize(test_img)
+
+    # print(pid, score)
