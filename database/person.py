@@ -12,3 +12,8 @@ class Person(Collection):
         result = self.find_one({"_id": ObjectId(id)})
 
         return result
+
+    def get_all(self):
+        result = self.find({})
+
+        return result
