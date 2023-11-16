@@ -1,0 +1,5 @@
+# FILEPATH: /c:/Users/Hoang/Code/CV/face-recognition/.gitignore
+
+# Python virtual environment
+venv/
+*.pth
