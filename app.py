@@ -51,12 +51,14 @@ class App:
 if __name__ == "__main__":
     app = App()
 
-    img1 = cv2.imread("sample\hiep-dep-trai.jpg")
-    img2 = cv2.imread("sample\hiep-handsome.jpg")
+    # UNCOMMENT THIS TO ADD NEW PERSON
+    # img1 = cv2.imread("sample\hiep-dep-trai.jpg")
+    # img2 = cv2.imread("sample\hiep-handsome.jpg")
 
-    pid = app.add_new_person("Ngo Hiep", img1)
-    app.add_new_face(person_id=pid, image=img2)
+    # pid = app.add_new_person("Ngo Hiep", img1)
+    # app.add_new_face(person_id=pid, image=img2)
 
+    # UNCOMMENT THIS TO GET FACES BY PERSON ID
     # pid = "655624f0bbe1e9caaaab6434"
 
     # faces = app.get_faces_by_person_id(pid)

@@ -23,7 +23,7 @@ class Facebank(Collection):
         self.insert_one(face)
 
     def get_faces_by_person_id(self, person_id):
-        result = self.find({"person_id": person_id})
+        result = list(self.find({"person_id": person_id}))
 
         for face in result:
             face["image"] = decode_image(
