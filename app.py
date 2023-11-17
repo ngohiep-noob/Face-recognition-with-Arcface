@@ -60,7 +60,7 @@ class App:
             pid = face["person_id"]
             score = face["score"]
 
-            weighted_score = score / math.log(idx + 2)
+            weighted_score = score / (math.log(idx + 1) + 1)
 
             if pid in pred:
                 pred[pid] += weighted_score
