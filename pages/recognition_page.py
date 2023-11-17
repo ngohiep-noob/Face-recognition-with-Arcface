@@ -2,6 +2,8 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 from app import App
+import pymongo
+from utils import draw_bounding_boxes
 
 app = App()
 st.markdown("# Face Recognition")
@@ -20,7 +22,7 @@ if submit_button:
           # To convert PIL Image to a numpy array:
           img_array = np.array(img_buffer)
           identified_faces = app.identify_faces(img_array)
-          drawn_img = app.draw_bounding_boxes(img_array, identified_faces)
+          drawn_img = draw_bounding_boxes(img_array, identified_faces)
           st.image(drawn_img)
     # -----UNCOMMENT THIS TO DRAW BOUNDING BOXES-----
     # drawn_img = draw_bounding_boxes(test_img, identified_faces)
