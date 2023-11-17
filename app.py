@@ -90,9 +90,8 @@ class App:
             cropped_face = face["image"]
             embedding = self.face_embedder.embed_face(cropped_face)
             sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
-            pid, _ = self.vote_preds(sim_faces)
+            pid, score = self.vote_preds(sim_faces)
             face["identity"] = self.get_person_info(pid)
-
         return detected_faces
 
 

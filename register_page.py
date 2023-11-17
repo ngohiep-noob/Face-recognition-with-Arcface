@@ -14,16 +14,21 @@ img_file_buffer = st.camera_input("Take a photo to register")
 user_type = st.selectbox("Select User Type", ["New User", "Registered User"])
 registered_users = app.person_col.get_all()
 selected_user = ""
-
+row_size = 3
+grid = st.columns(row_size)
+col = 0
 if user_type == "New User":
       new_user_name = st.text_input("Enter New Name:")
 elif user_type == "Registered User":
       selected_user = st.selectbox("Select Registered User", registered_users)
-faces = app.get_faces_by_person_id(str(selected_user["_id"]))
-st.write(selected_user['_id'])
+      faces = app.get_faces_by_person_id(str(selected_user["_id"]))
+      st.write(selected_user['_id'])
+      for face in faces:
+        with grid[col]:
+          st.image(face["image"])
+      col = (col + 1) % row_size
 submit_button = st.button("Submit")
-for face in faces:
-  st.image(face["image"])
+
 
 
 if submit_button:
@@ -41,5 +46,7 @@ if submit_button:
             app.add_new_person(name=new_user_name, image=img_array)
             st.image(img_array, caption=new_user_name)
           elif user_type == "Registered User":
-              app.add_new_face(image = img_array, person_id = str(selected_user["_id"] ))
+              pid = str(selected_user["_id"])
+              st.write(pid)
+              app.add_new_face(person_id=pid, image=img_array)
               st.image(img_array, caption=selected_user)
