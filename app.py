@@ -6,6 +6,7 @@ from face_embedder import FaceEmbedder
 import cv2
 import math
 from pprint import pprint
+from utils import draw_bounding_boxes
 
 
 class App:
@@ -49,7 +50,10 @@ class App:
 
         self.facebank_col.add_face(image=face, embedding=embedding, person_id=person_id)
 
-    def vote_prediction(self, sim_faces):
+    def vote_preds(self, sim_faces):
+        """
+        Vote the most likely person based on ranking list
+        """
         pred = {}  # {person_id: accumulated weighted score}
 
         for idx, face in enumerate(sim_faces):
@@ -76,14 +80,20 @@ class App:
     def get_person_info(self, person_id):
         return self.person_col.find_by_id(person_id)
 
-    def recognize(self, image):
-        embedding, face = self.get_embedding(image)
+    def identify_faces(self, image):
+        """
+        Detect and identify all faces represented in the image
+        """
+        detected_faces = self.face_detector.detect_multi_faces(image)
 
-        sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
+        for face in detected_faces:
+            cropped_face = face["image"]
+            embedding = self.face_embedder.embed_face(cropped_face)
+            sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
+            pid, _ = self.vote_preds(sim_faces)
+            face["identity"] = self.get_person_info(pid)
 
-        max_pid, max_score = self.vote_prediction(sim_faces)
-
-        return max_pid, max_score
+        return detected_faces
 
 
 if __name__ == "__main__":
@@ -109,9 +119,11 @@ if __name__ == "__main__":
     # -----UNCOMMENT THIS TO RECOGNIZE-----
     # test_img = cv2.imread("sample\hiep-dep-trai.test.jpg")
 
-    # pid, score = app.recognize(test_img)
+    # identified_faces = app.identify_faces(test_img)
 
-    # person = app.get_person_info(pid)
+    # -----UNCOMMENT THIS TO DRAW BOUNDING BOXES-----
+    # drawn_img = draw_bounding_boxes(test_img, identified_faces)
 
-    # print("Person info:")
-    # pprint(person)
+    # cv2.imshow("final", drawn_img)
+
+    # cv2.waitKey(0)

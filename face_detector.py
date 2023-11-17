@@ -11,6 +11,25 @@ class FaceDetector:
 
         return w * h
 
+    def detect_multi_faces(self, img, min_confidence=0.8):
+        detected_boxes = self.detector.detect_faces(img)
+
+        """
+            List({image: <cropped face>, box: <bounding box>})
+        """
+        cropped_faces = []
+
+        for dect in detected_boxes:
+            if dect["confidence"] >= min_confidence:
+                x, y, w, h = dect["box"]
+                payload = {
+                    "image": img[y : y + h, x : x + w].copy(),
+                    "box": dect["box"],
+                }
+                cropped_faces.append(payload)
+
+        return cropped_faces
+
     def detect_face(self, img, min_confidence=0.8):
         """
         Input: img
