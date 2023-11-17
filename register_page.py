@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 from app import App
-import pymongo
 
 
 st.markdown("# Face Register")
@@ -18,7 +17,7 @@ row_size = 3
 grid = st.columns(row_size)
 col = 0
 if user_type == "New User":
-      new_user_name = st.text_input("Enter New Name:")
+    new_user_name = st.text_input("Enter New Name:")
 elif user_type == "Registered User":
       selected_user = st.selectbox("Select Registered User", registered_users)
       faces = app.get_faces_by_person_id(str(selected_user["_id"]))
@@ -32,20 +31,20 @@ submit_button = st.button("Submit")
 
 
 if submit_button:
-      if img_file_buffer is not None:
-          # To read the image file buffer as a PIL Image:
-          
-          img_buffer = Image.open(img_file_buffer)
+    if img_file_buffer is not None:
+        # To read the image file buffer as a PIL Image:
 
-          # To convert PIL Image to a numpy array:
-          img_array = np.array(img_buffer)
+        img_buffer = Image.open(img_file_buffer)
 
-          # Display the image with the selected user's name as the caption
-          if user_type == "New User":
+        # To convert PIL Image to a numpy array:
+        img_array = np.array(img_buffer)
+
+        # Display the image with the selected user's name as the caption
+        if user_type == "New User":
             st.write("New Face Register successfully")
             app.add_new_person(name=new_user_name, image=img_array)
             st.image(img_array, caption=new_user_name)
-          elif user_type == "Registered User":
+        elif user_type == "Registered User":
               pid = str(selected_user["_id"])
               st.write(pid)
               app.add_new_face(person_id=pid, image=img_array)

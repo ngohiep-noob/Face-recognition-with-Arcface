@@ -17,7 +17,7 @@ def draw_bounding_boxes(src_img, detections, color=(0, 0, 255)):
         thick = int((imgHeight + imgWidth) // 900)
         cv2.putText(
             img_with_bb,
-            identity["name"],
+            f'{identity["name"]} ({identity["score"]:.2f})',
             (x, y - 12),
             0,
             1e-3 * imgHeight,

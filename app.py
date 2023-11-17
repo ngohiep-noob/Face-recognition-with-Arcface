@@ -67,15 +67,20 @@ class App:
             else:
                 pred[pid] = weighted_score
 
-        max_score = 0
+        max_voting = 0
         max_pid = None
 
         for pid, score in pred.items():
-            if score > max_score:
-                max_score = score
+            if score > max_voting:
+                max_voting = score
                 max_pid = pid
+        sim_of_likely_pid = []
 
-        return max_pid, max_score
+        for face in sim_faces:
+            if face["person_id"] == max_pid:
+                sim_of_likely_pid.append(face["score"])
+
+        return max_pid, sum(sim_of_likely_pid) / len(sim_of_likely_pid)
 
     def get_person_info(self, person_id):
         return self.person_col.find_by_id(person_id)
@@ -92,6 +97,8 @@ class App:
             sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
             pid, score = self.vote_preds(sim_faces)
             face["identity"] = self.get_person_info(pid)
+            face["identity"]["score"] = score
+
         return detected_faces
 
 
@@ -116,13 +123,13 @@ if __name__ == "__main__":
     # cv2.waitKey(0)
 
     # -----UNCOMMENT THIS TO RECOGNIZE-----
-    # test_img = cv2.imread("sample\hiep-dep-trai.test.jpg")
+    test_img = cv2.imread("sample\hiep-dep-trai.test.jpg")
 
-    # identified_faces = app.identify_faces(test_img)
+    identified_faces = app.identify_faces(test_img)
 
     # -----UNCOMMENT THIS TO DRAW BOUNDING BOXES-----
-    # drawn_img = draw_bounding_boxes(test_img, identified_faces)
+    drawn_img = draw_bounding_boxes(test_img, identified_faces)
 
-    # cv2.imshow("final", drawn_img)
+    cv2.imshow("final", drawn_img)
 
-    # cv2.waitKey(0)
+    cv2.waitKey(0)
