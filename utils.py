@@ -11,13 +11,19 @@ def draw_bounding_boxes(src_img, detections, color=(0, 0, 255)):
         x, y, w, h = det["box"]
         identity = det["identity"]
 
+        label = (
+            "unknown"
+            if identity is None
+            else f'{identity["name"]} ({identity["score"]:.2f})'
+        )
+
         cv2.rectangle(img_with_bb, (x, y), (x + w, y + h), (0, 155, 255), 2)
         imgHeight, imgWidth, _ = src_img.shape
 
         thick = int((imgHeight + imgWidth) // 900)
         cv2.putText(
             img_with_bb,
-            f'{identity["name"]} ({identity["score"]:.2f})',
+            label,
             (x, y - 12),
             0,
             1e-3 * imgHeight,

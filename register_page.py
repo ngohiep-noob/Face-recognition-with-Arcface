@@ -4,8 +4,8 @@ import numpy as np
 from app import App
 
 
-st.markdown("# Face Register")
-st.sidebar.markdown("# Face Register")
+st.markdown("# Face Recognition App")
+st.sidebar.markdown("# Face Registration")
 app = App()
 
 img_file_buffer = st.camera_input("Take a photo to register")
@@ -13,21 +13,24 @@ img_file_buffer = st.camera_input("Take a photo to register")
 user_type = st.selectbox("Select User Type", ["New User", "Registered User"])
 registered_users = app.person_col.get_all()
 selected_user = ""
-row_size = 3
-grid = st.columns(row_size)
-col = 0
+
 if user_type == "New User":
     new_user_name = st.text_input("Enter New Name:")
 elif user_type == "Registered User":
-      selected_user = st.selectbox("Select Registered User", registered_users)
-      faces = app.get_faces_by_person_id(str(selected_user["_id"]))
-      st.write(selected_user['_id'])
-      for face in faces:
+    selected_user = st.selectbox(
+        "Select registered user",
+        options=registered_users,
+        format_func=lambda x: f'{x["name"]} ({x["_id"]})',
+    )
+    faces = app.get_faces_by_person_id(str(selected_user["_id"]))
+    row_size = 3
+    grid = st.columns(row_size)
+    col = 0
+    for face in faces:
         with grid[col]:
-          st.image(face["image"])
-      col = (col + 1) % row_size
+            st.image(face["image"])
+    col = (col + 1) % row_size
 submit_button = st.button("Submit")
-
 
 
 if submit_button:
@@ -41,11 +44,12 @@ if submit_button:
 
         # Display the image with the selected user's name as the caption
         if user_type == "New User":
-            st.write("New Face Register successfully")
+            st.write("Registering new user...")
             app.add_new_person(name=new_user_name, image=img_array)
+            st.write("New user registered!")
             st.image(img_array, caption=new_user_name)
         elif user_type == "Registered User":
-              pid = str(selected_user["_id"])
-              st.write(pid)
-              app.add_new_face(person_id=pid, image=img_array)
-              st.image(img_array, caption=selected_user)
+            pid = str(selected_user["_id"])
+            st.write(pid)
+            app.add_new_face(person_id=pid, image=img_array)
+            st.image(img_array, caption=selected_user)

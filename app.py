@@ -63,9 +63,12 @@ class App:
             weighted_score = score / (math.log(idx + 1) + 1)
 
             if pid in pred:
-                pred[pid] += weighted_score
+                pred[pid].append(weighted_score)
             else:
-                pred[pid] = weighted_score
+                pred[pid] = [weighted_score]
+
+        for pid, scores in pred.items():
+            pred[pid] = sum(scores) / len(scores)
 
         max_voting = 0
         max_pid = None
@@ -96,8 +99,11 @@ class App:
             embedding = self.face_embedder.embed_face(cropped_face)
             sim_faces = self.facebank_col.get_similar_face(embedding=embedding.tolist())
             pid, score = self.vote_preds(sim_faces)
-            face["identity"] = self.get_person_info(pid)
-            face["identity"]["score"] = score
+            if score > 0.7:
+                face["identity"] = self.get_person_info(pid)
+                face["identity"]["score"] = score
+            else:
+                face["identity"] = None
 
         return detected_faces
 
