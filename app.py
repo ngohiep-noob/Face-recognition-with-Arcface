@@ -1,6 +1,7 @@
 from database.database import Database
 from database.facebank import Facebank
 from database.person import Person
+from config import DB_NAME, DB_URL, EMBEDDING_PATH
 from face_detector import FaceDetector
 from face_embedder import FaceEmbedder
 import cv2
@@ -12,15 +13,15 @@ from utils import draw_bounding_boxes
 class App:
     def __init__(self) -> None:
         self.database = Database(
-            db_url="mongodb+srv://hoanghiephai:3X4qobjRUBpUBcDR@face-embeddings.m9dpaia.mongodb.net/",
-            db_name="face_recognition",
+            db_url=DB_URL,
+            db_name=DB_NAME,
         )
         self.face_detector = FaceDetector()
         self.face_embedder = FaceEmbedder()
 
         self.person_col = Person(name="person", database=self.database)
         self.facebank_col = Facebank(
-            name="facebank", database=self.database, embedding_path="embedding"
+            name="facebank", database=self.database, embedding_path=EMBEDDING_PATH
         )
 
         print("App initialized!")
@@ -106,36 +107,3 @@ class App:
                 face["identity"] = None
 
         return detected_faces
-
-
-if __name__ == "__main__":
-    app = App()
-
-    # -----UNCOMMENT THIS TO ADD NEW PERSON-----
-    # img1 = cv2.imread("sample\hiep-dep-trai.jpg")
-    # img2 = cv2.imread("sample\hiep-handsome.jpg")
-
-    # pid = app.add_new_person("Ngo Hiep", img1)
-    # app.add_new_face(person_id=pid, image=img2)
-
-    # -----UNCOMMENT THIS TO GET FACES BY PERSON ID-----
-    # pid = "655624f0bbe1e9caaaab6434"
-
-    # faces = app.get_faces_by_person_id(pid)
-
-    # for face in faces:
-    #     cv2.imshow(str(face["_id"]), face["image"])
-
-    # cv2.waitKey(0)
-
-    # -----UNCOMMENT THIS TO RECOGNIZE-----
-    test_img = cv2.imread("sample\hiep-dep-trai.test.jpg")
-
-    identified_faces = app.identify_faces(test_img)
-
-    # -----UNCOMMENT THIS TO DRAW BOUNDING BOXES-----
-    drawn_img = draw_bounding_boxes(test_img, identified_faces)
-
-    cv2.imshow("final", drawn_img)
-
-    cv2.waitKey(0)
